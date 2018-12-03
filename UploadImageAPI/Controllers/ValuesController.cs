@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace UploadImageAPI.Controllers
@@ -34,6 +37,15 @@ namespace UploadImageAPI.Controllers
         // DELETE api/values/5
         public void Delete(int id)
         {
+        }
+
+        public void UploadImage(string imageBase64)
+        {
+            var uniqueName = Guid.NewGuid().ToString() + ".jpeg";
+            var path = HttpContext.Current.Server.MapPath(ConfigurationManager.AppSettings["ImagePath"])
+                + uniqueName;
+            byte[] imageBytes = Convert.FromBase64String(imageBase64);
+            File.WriteAllBytes(path, imageBytes);
         }
     }
 }
