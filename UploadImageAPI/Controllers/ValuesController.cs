@@ -7,9 +7,12 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
+/*using System.Web.Http.RouteCaptcha*/
 
 namespace UploadImageAPI.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
         // GET api/values
@@ -39,12 +42,19 @@ namespace UploadImageAPI.Controllers
         {
         }
 
-        public void UploadImage(string imageBase64)
+        public class MyModel
+        {
+            public string file { get; set; }
+        }
+
+        [HttpPost]
+        [Route("api/uploadimage")]
+        public void UploadImage([FromBody]MyModel model)
         {
             var uniqueName = Guid.NewGuid().ToString() + ".jpeg";
             var path = HttpContext.Current.Server.MapPath(ConfigurationManager.AppSettings["ImagePath"])
                 + uniqueName;
-            byte[] imageBytes = Convert.FromBase64String(imageBase64);
+            byte[] imageBytes = Convert.FromBase64String(model.file);
             File.WriteAllBytes(path, imageBytes);
         }
     }
